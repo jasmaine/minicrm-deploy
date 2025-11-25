@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minicrm
+  namespace: minicrm
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: minicrm
+  template:
+    metadata:
+      labels:
+        app: minicrm
+    spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.35
+        command:
+        - sh
+        - -c
+        - |
+          until nc -z postgres-service 5432; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+      - name: setup-uploads
+        image: busybox:1.35
+        command:
+        - sh
+        - -c
+        - |
+          echo "Setting up uploads directory..."
+          # Create media subdirectories
+          mkdir -p /uploads/media/thumb /uploads/media/medium /uploads/media/large /uploads/files
+          # Fix permissions (www-data UID:GID is 33:33)
+          chown -R 33:33 /uploads
+          chmod -R 755 /uploads
+          echo "Uploads directory ready!"
+        volumeMounts:
+        - name: uploads-storage
+          mountPath: /uploads
+      containers:
+      - name: minicrm
+        image: ghcr.io/jasmaine/minicrm:1.0.0  # Replace with your image
+        ports:
+        - containerPort: 80
+          name: http
+        envFrom:
+        - configMapRef:
+            name: minicrm-config
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: minicrm-secrets
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: minicrm-secrets
+              key: DB_PASSWORD
+        volumeMounts:
+        - name: uploads-storage
+          mountPath: /var/www/html/uploads
+        - name: storage-logs
+          mountPath: /var/www/html/storage/logs
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      volumes:
+      - name: uploads-storage
+        persistentVolumeClaim:
+          claimName: uploads-pvc
+      - name: storage-logs
+        emptyDir: {}

@@ -1,0 +1,18 @@
+{{- if .Values.uploads.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "minicrm.fullname" . }}-uploads
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "minicrm.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.uploads.persistence.accessMode }}
+  {{- if .Values.uploads.persistence.storageClass }}
+  storageClassName: {{ .Values.uploads.persistence.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.uploads.persistence.size }}
+{{- end }}

@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "minicrm.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "minicrm.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.minicrm.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "minicrm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "minicrm.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "minicrm.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 8 }}
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.35
+        command:
+        - sh
+        - -c
+        - |
+          until nc -z {{ include "minicrm.postgresql.fullname" . }} 5432; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.service.targetPort }}
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: {{ include "minicrm.fullname" . }}-config
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "minicrm.fullname" . }}-secrets
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "minicrm.fullname" . }}-secrets
+              key: DB_PASSWORD
+        {{- if .Values.minicrm.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.minicrm.livenessProbe.httpGet.path }}
+            port: {{ .Values.minicrm.livenessProbe.httpGet.port }}
+          initialDelaySeconds: {{ .Values.minicrm.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.minicrm.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.minicrm.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.minicrm.livenessProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.minicrm.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.minicrm.readinessProbe.httpGet.path }}
+            port: {{ .Values.minicrm.readinessProbe.httpGet.port }}
+          initialDelaySeconds: {{ .Values.minicrm.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.minicrm.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.minicrm.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.minicrm.readinessProbe.failureThreshold }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.minicrm.resources | nindent 10 }}
+        volumeMounts:
+        - name: uploads-storage
+          mountPath: /var/www/html/uploads
+        - name: storage-logs
+          mountPath: /var/www/html/storage/logs
+      volumes:
+      - name: uploads-storage
+        persistentVolumeClaim:
+          claimName: {{ include "minicrm.fullname" . }}-uploads
+      - name: storage-logs
+        emptyDir: {}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

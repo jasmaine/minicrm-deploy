@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minicrm-service
+  namespace: minicrm
+spec:
+  selector:
+    app: minicrm
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http

@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minicrm-db-init
+  namespace: minicrm
+spec:
+  template:
+    metadata:
+      name: minicrm-db-init
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.35
+        command:
+        - sh
+        - -c
+        - |
+          until nc -z postgres-service 5432; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+      containers:
+      - name: db-init
+        image: postgres:15-alpine
+        command:
+        - sh
+        - -c
+        - |
+          echo "Loading database schema..."
+          psql -h postgres-service -U ${DB_USER} -d ${DB_NAME} -f /schema/schema.sql
+          echo "Database schema loaded successfully!"
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: minicrm-secrets
+              key: DB_USER
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: minicrm-config
+              key: DB_NAME
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: minicrm-secrets
+              key: DB_PASSWORD
+        volumeMounts:
+        - name: schema
+          mountPath: /schema
+      volumes:
+      - name: schema
+        configMap:
+          name: db-schema

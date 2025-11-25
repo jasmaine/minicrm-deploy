@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minicrm-config
+  namespace: minicrm
+data:
+  ENVIRONMENT: "production"
+  DB_TYPE: "pgsql"
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_NAME: "minicrm"
+  SESSION_COOKIE_SECURE: "1"
+  APP_DEBUG: "false"
+  LOG_LEVEL: "warning"

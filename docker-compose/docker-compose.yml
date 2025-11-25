@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: minicrm_postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-minicrm}
+      POSTGRES_USER: ${DB_USER:-minicrm}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - minicrm
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-minicrm}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    image: ghcr.io/jasmaine/minicrm:latest
+    container_name: minicrm_web
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    environment:
+      DB_TYPE: pgsql
+      DB_HOST: postgres
+      DB_NAME: ${DB_NAME:-minicrm}
+      DB_USER: ${DB_USER:-minicrm}
+      DB_PASSWORD: ${DB_PASSWORD:-changeme}
+      DB_PORT: 5432
+      BASE_URL: ${BASE_URL:-http://localhost:8080}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-MiniCRM}
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+    volumes:
+      - uploads:/var/www/html/uploads
+      - storage:/var/www/html/storage
+    networks:
+      - minicrm
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  minicrm:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  uploads:
+  storage:

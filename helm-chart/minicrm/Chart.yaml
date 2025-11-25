@@ -1,0 +1,17 @@
+apiVersion: v2
+name: minicrm
+description: A modern, lightweight CRM system for managing customers, contacts, and communications
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - crm
+  - customer-management
+  - email-marketing
+  - contacts
+home: https://github.com/yourusername/minicrm
+sources:
+  - https://github.com/yourusername/minicrm
+maintainers:
+  - name: MiniCRM Team
+    email: support@minicrm.com

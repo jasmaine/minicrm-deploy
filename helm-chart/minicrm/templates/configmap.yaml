@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "minicrm.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "minicrm.labels" . | nindent 4 }}
+data:
+  ENVIRONMENT: {{ .Values.minicrm.env.ENVIRONMENT | quote }}
+  DB_TYPE: {{ .Values.minicrm.env.DB_TYPE | quote }}
+  DB_HOST: {{ include "minicrm.postgresql.fullname" . | quote }}
+  DB_PORT: {{ .Values.minicrm.env.DB_PORT | quote }}
+  DB_NAME: {{ .Values.minicrm.env.DB_NAME | quote }}
+  SESSION_COOKIE_SECURE: {{ .Values.minicrm.env.SESSION_COOKIE_SECURE | quote }}
+  APP_DEBUG: {{ .Values.minicrm.env.APP_DEBUG | quote }}
+  LOG_LEVEL: {{ .Values.minicrm.env.LOG_LEVEL | quote }}

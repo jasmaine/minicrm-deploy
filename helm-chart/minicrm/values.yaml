@@ -1,0 +1,194 @@
+# Default values for minicrm Helm chart
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Application configuration
+app:
+  name: minicrm
+  environment: production
+  debug: false
+  logLevel: warning
+
+# Docker image configuration
+image:
+  repository: minicrm
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+# Image pull secrets (if using private registry)
+imagePullSecrets: []
+# - name: regcred
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: SAMEORIGIN";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "X-XSS-Protection: 1; mode=block";
+      more_set_headers "Referrer-Policy: no-referrer-when-downgrade";
+  hosts:
+    - host: minicrm.example.com  # CHANGE THIS
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: minicrm-tls
+      hosts:
+        - minicrm.example.com  # CHANGE THIS
+
+# MiniCRM deployment configuration
+minicrm:
+  replicaCount: 2
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "2000m"
+
+  # Liveness probe configuration
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /health
+      port: 80
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+
+  # Readiness probe configuration
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /health
+      port: 80
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  # Environment variables
+  env:
+    ENVIRONMENT: production
+    DB_TYPE: pgsql
+    DB_HOST: "{{ .Release.Name }}-postgres"
+    DB_PORT: "5432"
+    DB_NAME: minicrm
+    SESSION_COOKIE_SECURE: "1"
+    APP_DEBUG: "false"
+    LOG_LEVEL: warning
+
+  # Secrets (use these or create externally)
+  secrets:
+    # IMPORTANT: Change these values or use external secret
+    dbUser: minicrm
+    dbPassword: CHANGE_ME_SECURE_PASSWORD
+    postgresPassword: CHANGE_ME_POSTGRES_PASSWORD
+
+# PostgreSQL configuration
+postgresql:
+  enabled: true
+
+  # StatefulSet configuration
+  replicaCount: 1
+
+  # PostgreSQL image
+  image:
+    repository: postgres
+    tag: "15-alpine"
+    pullPolicy: IfNotPresent
+
+  # Database configuration
+  database:
+    name: minicrm
+    user: minicrm
+    password: CHANGE_ME_POSTGRES_PASSWORD
+
+  # Resource configuration
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+
+  # PostgreSQL tuning parameters
+  postgresqlParams:
+    maxConnections: 100
+    sharedBuffers: "256MB"
+    effectiveCacheSize: "1GB"
+    maintenanceWorkMem: "64MB"
+    checkpointCompletionTarget: "0.9"
+    walBuffers: "16MB"
+    defaultStatisticsTarget: 100
+    randomPageCost: "1.1"
+    effectiveIoConcurrency: 200
+    workMem: "2621kB"
+    minWalSize: "1GB"
+    maxWalSize: "4GB"
+
+  # Persistence configuration
+  persistence:
+    enabled: true
+    storageClass: ""  # Use default storage class
+    accessMode: ReadWriteOnce
+    size: 10Gi
+
+# Uploads storage configuration
+uploads:
+  persistence:
+    enabled: true
+    storageClass: ""  # Use NFS or similar for ReadWriteMany
+    accessMode: ReadWriteMany
+    size: 20Gi
+
+# Horizontal Pod Autoscaler configuration
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Security context
+securityContext:
+  runAsNonRoot: false
+  fsGroup: 33  # www-data group
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity rules
+affinity: {}
+
+# Service account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
