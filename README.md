@@ -13,21 +13,7 @@ docker pull ghcr.io/jasmaine/minicrm:latest
 
 Choose the deployment method that best fits your needs:
 
-### 1. Plain Docker (Simplest)
-Single container with SQLite database.
-
-**Best for:** Development, testing, small single-user deployments
-
-[📖 Plain Docker Guide](plain-docker/)
-
-```bash
-cd plain-docker
-./docker-run.sh
-```
-
----
-
-### 2. Docker Compose (Recommended)
+### 1. Docker Compose (Recommended)
 Multi-container setup with PostgreSQL database.
 
 **Best for:** Small to medium deployments, production-ready
@@ -43,7 +29,7 @@ docker-compose up -d
 
 ---
 
-### 3. Kubernetes
+### 2. Kubernetes
 Full Kubernetes deployment with StatefulSet PostgreSQL.
 
 **Best for:** Large deployments, high availability, scalability
@@ -56,7 +42,7 @@ kubectl apply -f k8s/
 
 ---
 
-### 4. Helm Chart
+### 3. Helm Chart
 Templated Kubernetes deployment with easy customization.
 
 **Best for:** Kubernetes deployments with custom configurations
@@ -84,9 +70,6 @@ MiniCRM includes:
 
 ## Requirements
 
-### Plain Docker
-- Docker 20.10+
-
 ### Docker Compose
 - Docker 20.10+
 - Docker Compose 2.0+
@@ -106,7 +89,7 @@ All deployment methods support these environment variables:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DB_TYPE` | Database type (sqlite/pgsql) | `pgsql` |
+| `DB_TYPE` | Database type (pgsql) | `pgsql` |
 | `DB_HOST` | Database hostname | `localhost` |
 | `DB_NAME` | Database name | `minicrm` |
 | `DB_USER` | Database username | `minicrm` |
@@ -127,7 +110,7 @@ After installation, access the application and register the first user. The firs
 
 ## Upgrading
 
-### Plain Docker & Docker Compose
+### Docker Compose
 ```bash
 docker pull ghcr.io/jasmaine/minicrm:latest
 # Restart your containers
@@ -169,16 +152,9 @@ docker cp minicrm_web:/var/www/html/uploads ./uploads-backup
 kubectl cp minicrm/<pod-name>:/var/www/html/uploads ./uploads-backup
 ```
 
-## Support
-
-- **Issues:** https://github.com/jasmaine/minicrm/issues
-- **Discussions:** https://github.com/jasmaine/minicrm/discussions
-- **Source Code:** https://github.com/jasmaine/minicrm (private)
-- **Docker Image:** https://github.com/jasmaine/packages/container/package/minicrm
-
 ## License
 
-See the main repository for license information.
+This project is open source software.
 
 ---
 
