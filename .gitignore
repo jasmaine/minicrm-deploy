@@ -1,0 +1,28 @@
+# Environment files
+.env
+*.env
+!.env.example
+
+# Local data
+data/
+*.db
+*.sqlite
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Backups
+*.sql
+*.tar.gz
+*.zip
+backups/

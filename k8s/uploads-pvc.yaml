@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: uploads-pvc
+  namespace: minicrm
+spec:
+  accessModes:
+    - ReadWriteMany  # Multiple pods need access to uploads
+  resources:
+    requests:
+      storage: 20Gi
+  # Uncomment and specify storage class if needed
+  # For ReadWriteMany, you might need NFS or similar
+  # storageClassName: nfs-client
