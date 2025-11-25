@@ -69,18 +69,6 @@ helm install minicrm ./helm-chart/minicrm
 
 ---
 
-## Quick Comparison
-
-| Feature | Plain Docker | Docker Compose | Kubernetes | Helm |
-|---------|-------------|----------------|------------|------|
-| **Setup Complexity** | ⭐ Very Easy | ⭐⭐ Easy | ⭐⭐⭐⭐ Complex | ⭐⭐⭐ Moderate |
-| **Database** | SQLite | PostgreSQL | PostgreSQL | PostgreSQL |
-| **Scalability** | Single instance | Single instance | Multi-instance | Multi-instance |
-| **High Availability** | ❌ No | ❌ No | ✅ Yes | ✅ Yes |
-| **Production Ready** | ⚠️ Small use | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Auto-scaling** | ❌ No | ❌ No | ✅ Yes | ✅ Yes |
-| **Best For** | Dev/Test | Small prod | Large prod | Enterprise |
-
 ## Features
 
 MiniCRM includes:
