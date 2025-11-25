@@ -1,6 +1,5 @@
 # MiniCRM Deployment Configurations
 
-Official deployment configurations for [MiniCRM](https://github.com/jasmaine/minicrm) - a lightweight, self-hosted CRM system.
 
 ## Docker Image
 
