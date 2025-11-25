@@ -1,5 +1,26 @@
 # MiniCRM Deployment Configurations
 
+## Quick Start
+
+The easiest way to deploy MiniCRM is using the automated installation script:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jasmaine/minicrm-deploy/master/install.sh | bash
+```
+
+Or download and run manually:
+
+```bash
+wget https://raw.githubusercontent.com/jasmaine/minicrm-deploy/master/install.sh
+chmod +x install.sh
+./install.sh
+```
+
+The script will guide you through:
+- Choosing your deployment method (Docker Compose, Kubernetes, or Helm)
+- Setting up database credentials
+- Configuring your domain and SSL (for Kubernetes/Helm)
+- Installing all necessary components
 
 ## Docker Image
 
@@ -34,11 +55,21 @@ Full Kubernetes deployment with StatefulSet PostgreSQL.
 
 **Best for:** Large deployments, high availability, scalability
 
+**Includes:**
+- NGINX Ingress Controller support
+- Automatic SSL/TLS with cert-manager and Let's Encrypt
+- LoadBalancer service
+- Security headers (X-Frame-Options, X-XSS-Protection, etc.)
+- Rate limiting
+- Persistent storage for uploads and database
+
 [📖 Kubernetes Guide](k8s/)
 
 ```bash
 kubectl apply -f k8s/
 ```
+
+**Note:** Before deploying, edit `k8s/ingress.yaml` to replace `crm.pasarella.eu` with your domain name.
 
 ---
 
@@ -107,6 +138,63 @@ All deployment methods support these environment variables:
 After installation, access the application and register the first user. The first user automatically becomes the admin.
 
 **Important:** Change the admin password immediately after first login!
+
+## SSL/TLS and Ingress Setup (Kubernetes)
+
+The Kubernetes deployment includes a pre-configured Ingress with automatic SSL/TLS certificate provisioning.
+
+### Prerequisites
+
+1. **NGINX Ingress Controller** - Install if not already present:
+```bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml
+```
+
+2. **cert-manager** - For automatic SSL certificates from Let's Encrypt:
+```bash
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
+```
+
+3. **ClusterIssuer** - Configure Let's Encrypt (included in k8s/ directory):
+```bash
+kubectl apply -f k8s/cert-manager-issuer.yaml
+```
+
+### Configure Your Domain
+
+Edit `k8s/ingress.yaml` and replace `crm.pasarella.eu` with your domain:
+
+```yaml
+spec:
+  tls:
+  - hosts:
+    - your-domain.com  # Replace this
+    secretName: minicrm-tls
+  rules:
+  - host: your-domain.com  # Replace this
+```
+
+### Features Included
+
+- **Automatic SSL/TLS**: Certificates are automatically provisioned and renewed via Let's Encrypt
+- **Force HTTPS**: All HTTP traffic is automatically redirected to HTTPS
+- **Security Headers**: X-Frame-Options, X-Content-Type-Options, X-XSS-Protection
+- **Rate Limiting**: Protection against abuse (100 requests per client)
+- **LoadBalancer**: Automatic external IP assignment (cloud provider dependent)
+
+### Access Your Application
+
+After deployment, the Ingress will automatically provision an SSL certificate. You can access your application at:
+
+```
+https://your-domain.com
+```
+
+Check certificate status:
+```bash
+kubectl get certificate -n minicrm
+kubectl describe certificate minicrm-tls -n minicrm
+```
 
 ## Upgrading
 
