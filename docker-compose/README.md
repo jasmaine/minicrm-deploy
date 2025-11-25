@@ -139,4 +139,4 @@ For production use:
 ## Support
 
 - Documentation: [Main README](../README.md)
-- Issues: https://github.com/jasmaine/minicrm/issues
+- Docker Image: https://github.com/jasmaine/packages/container/package/minicrm

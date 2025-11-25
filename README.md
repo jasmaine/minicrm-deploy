@@ -1,6 +1,6 @@
 # MiniCRM Deployment Configurations
 
-Official deployment configurations for [MiniCRM](https://github.com/jasmaine/minicrm) - a lightweight, self-hosted CRM system.
+Official deployment configurations for MiniCRM - a lightweight, self-hosted CRM system.
 
 ## Docker Image
 
@@ -14,21 +14,7 @@ docker pull ghcr.io/jasmaine/minicrm:latest
 
 Choose the deployment method that best fits your needs:
 
-### 1. Plain Docker (Simplest)
-Single container with SQLite database.
-
-**Best for:** Development, testing, small single-user deployments
-
-[📖 Plain Docker Guide](plain-docker/)
-
-```bash
-cd plain-docker
-./docker-run.sh
-```
-
----
-
-### 2. Docker Compose (Recommended)
+### 1. Docker Compose (Recommended)
 Multi-container setup with PostgreSQL database.
 
 **Best for:** Small to medium deployments, production-ready
@@ -44,7 +30,7 @@ docker-compose up -d
 
 ---
 
-### 3. Kubernetes
+### 2. Kubernetes
 Full Kubernetes deployment with StatefulSet PostgreSQL.
 
 **Best for:** Large deployments, high availability, scalability
@@ -57,7 +43,7 @@ kubectl apply -f k8s/
 
 ---
 
-### 4. Helm Chart
+### 3. Helm Chart
 Templated Kubernetes deployment with easy customization.
 
 **Best for:** Kubernetes deployments with custom configurations
@@ -72,15 +58,15 @@ helm install minicrm ./helm-chart/minicrm
 
 ## Quick Comparison
 
-| Feature | Plain Docker | Docker Compose | Kubernetes | Helm |
-|---------|-------------|----------------|------------|------|
-| **Setup Complexity** | ⭐ Very Easy | ⭐⭐ Easy | ⭐⭐⭐⭐ Complex | ⭐⭐⭐ Moderate |
-| **Database** | SQLite | PostgreSQL | PostgreSQL | PostgreSQL |
-| **Scalability** | Single instance | Single instance | Multi-instance | Multi-instance |
-| **High Availability** | ❌ No | ❌ No | ✅ Yes | ✅ Yes |
-| **Production Ready** | ⚠️ Small use | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Auto-scaling** | ❌ No | ❌ No | ✅ Yes | ✅ Yes |
-| **Best For** | Dev/Test | Small prod | Large prod | Enterprise |
+| Feature | Docker Compose | Kubernetes | Helm |
+|---------|----------------|------------|------|
+| **Setup Complexity** | ⭐⭐ Easy | ⭐⭐⭐⭐ Complex | ⭐⭐⭐ Moderate |
+| **Database** | PostgreSQL | PostgreSQL | PostgreSQL |
+| **Scalability** | Single instance | Multi-instance | Multi-instance |
+| **High Availability** | ❌ No | ✅ Yes | ✅ Yes |
+| **Production Ready** | ✅ Yes | ✅ Yes | ✅ Yes |
+| **Auto-scaling** | ❌ No | ✅ Yes | ✅ Yes |
+| **Best For** | Small/Medium prod | Large prod | Enterprise |
 
 ## Features
 
@@ -119,7 +105,7 @@ All deployment methods support these environment variables:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `DB_TYPE` | Database type (sqlite/pgsql) | `pgsql` |
+| `DB_TYPE` | Database type | `pgsql` |
 | `DB_HOST` | Database hostname | `localhost` |
 | `DB_NAME` | Database name | `minicrm` |
 | `DB_USER` | Database username | `minicrm` |
@@ -184,10 +170,8 @@ kubectl cp minicrm/<pod-name>:/var/www/html/uploads ./uploads-backup
 
 ## Support
 
-- **Issues:** https://github.com/jasmaine/minicrm/issues
-- **Discussions:** https://github.com/jasmaine/minicrm/discussions
-- **Source Code:** https://github.com/jasmaine/minicrm (private)
 - **Docker Image:** https://github.com/jasmaine/packages/container/package/minicrm
+- **Deployment Repository:** https://github.com/jasmaine/minicrm-deploy
 
 ## License
 
