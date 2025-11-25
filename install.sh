@@ -305,6 +305,10 @@ deploy_kubernetes() {
     print_info "Waiting for PostgreSQL to be ready..."
     kubectl wait --for=condition=ready pod -l app=postgres -n $K8S_NAMESPACE --timeout=300s || true
 
+    print_info "Loading database schema..."
+    kubectl apply -f k8s/db-schema-job.yaml -n $K8S_NAMESPACE
+    kubectl wait --for=condition=complete job/minicrm-db-init -n $K8S_NAMESPACE --timeout=120s || true
+
     print_info "Deploying MiniCRM application..."
     kubectl apply -f k8s/minicrm-deployment.yaml -n $K8S_NAMESPACE
     kubectl apply -f k8s/minicrm-service.yaml -n $K8S_NAMESPACE

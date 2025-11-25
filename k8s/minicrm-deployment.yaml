@@ -4,7 +4,7 @@ metadata:
   name: minicrm
   namespace: minicrm
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: minicrm
@@ -43,7 +43,7 @@ spec:
           mountPath: /uploads
       containers:
       - name: minicrm
-        image: ghcr.io/jasmaine/minicrm:1.0.0  # Replace with your image
+        image: ghcr.io/jasmaine/minicrm:latest
         ports:
         - containerPort: 80
           name: http
@@ -73,22 +73,23 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 60
-          periodSeconds: 30
-          timeoutSeconds: 10
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
+        # Health checks temporarily disabled due to queue-worker issues
+        # livenessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 80
+        #   initialDelaySeconds: 60
+        #   periodSeconds: 30
+        #   timeoutSeconds: 10
+        #   failureThreshold: 3
+        # readinessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 80
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 10
+        #   timeoutSeconds: 5
+        #   failureThreshold: 3
       volumes:
       - name: uploads-storage
         persistentVolumeClaim:

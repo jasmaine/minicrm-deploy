@@ -9,6 +9,7 @@ data:
   DB_HOST: "postgres-service"
   DB_PORT: "5432"
   DB_NAME: "minicrm"
+  BASE_URL: "http://localhost"
   SESSION_COOKIE_SECURE: "1"
   APP_DEBUG: "false"
   LOG_LEVEL: "warning"

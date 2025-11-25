@@ -7,7 +7,7 @@ spec:
     # The ACME server URL
     server: https://acme-v02.api.letsencrypt.org/directory
     # Email address used for ACME registration
-    email: admin@example.com  # Will be replaced by install script
+    email: studio@pasarella.eu  # Will be replaced by install script
     # Name of a secret used to store the ACME account private key
     privateKeySecretRef:
       name: letsencrypt-prod

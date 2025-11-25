@@ -23,13 +23,13 @@ spec:
           echo "PostgreSQL is ready!"
       containers:
       - name: db-init
-        image: postgres:15-alpine
+        image: ghcr.io/jasmaine/minicrm:latest
         command:
         - sh
         - -c
         - |
           echo "Loading database schema..."
-          psql -h postgres-service -U ${DB_USER} -d ${DB_NAME} -f /schema/schema.sql
+          PGPASSWORD=${DB_PASSWORD} psql -h postgres-service -U ${DB_USER} -d ${DB_NAME} -f /var/www/html/database/schema_postgres.sql
           echo "Database schema loaded successfully!"
         env:
         - name: DB_USER
@@ -42,15 +42,8 @@ spec:
             configMapKeyRef:
               name: minicrm-config
               key: DB_NAME
-        - name: PGPASSWORD
+        - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: minicrm-secrets
               key: DB_PASSWORD
-        volumeMounts:
-        - name: schema
-          mountPath: /schema
-      volumes:
-      - name: schema
-        configMap:
-          name: db-schema
