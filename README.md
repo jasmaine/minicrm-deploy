@@ -69,7 +69,7 @@ Full Kubernetes deployment with StatefulSet PostgreSQL.
 kubectl apply -f k8s/
 ```
 
-**Note:** Before deploying, edit `k8s/ingress.yaml` to replace `crm.pasarella.eu` with your domain name.
+**Note:** Before deploying, edit `k8s/ingress.yaml` to replace `crm.example.eu` with your domain name.
 
 ---
 
@@ -96,7 +96,7 @@ MiniCRM includes:
 - **Import/Export** - Bulk import contacts from CSV with duplicate detection
 - **Media Library** - Store and manage images for emails
 - **Activity Tracking** - Automatic logging of all actions
-- **Multi-language** - 7 languages supported
+- **Multi-language** - 7 languages supported (NL, EN, FR, DE, IT, ES, TR)
 - **Tag System** - Categorize contacts and companies
 
 ## Requirements
@@ -162,7 +162,7 @@ kubectl apply -f k8s/cert-manager-issuer.yaml
 
 ### Configure Your Domain
 
-Edit `k8s/ingress.yaml` and replace `crm.pasarella.eu` with your domain:
+Edit `k8s/ingress.yaml` and replace `crm.example.eu` with your domain:
 
 ```yaml
 spec:
