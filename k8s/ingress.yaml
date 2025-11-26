@@ -21,10 +21,10 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - crm.pasarella.eu  # Replace with your domain
+    - crm.example.com  # Replace with your domain
     secretName: minicrm-tls
   rules:
-  - host: crm.example.eu  # Replace with your domain
+  - host: crm.example.com  # Replace with your domain
     http:
       paths:
       - path: /
