@@ -7,6 +7,10 @@ metadata:
     {{- include "minicrm.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.minicrm.replicaCount }}
+  {{- if .Values.minicrm.strategy }}
+  strategy:
+    {{- toYaml .Values.minicrm.strategy | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "minicrm.selectorLabels" . | nindent 6 }}

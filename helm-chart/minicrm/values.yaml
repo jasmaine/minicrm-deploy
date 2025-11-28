@@ -11,8 +11,8 @@ app:
 
 # Docker image configuration
 image:
-  repository: minicrm
-  pullPolicy: IfNotPresent
+  repository: ghcr.io/jasmaine/minicrm
+  pullPolicy: Always
   tag: "latest"
 
 # Image pull secrets (if using private registry)
@@ -52,7 +52,11 @@ ingress:
 
 # MiniCRM deployment configuration
 minicrm:
-  replicaCount: 2
+  replicaCount: 1
+
+  # Deployment strategy (use Recreate for ReadWriteOnce volumes)
+  strategy:
+    type: Recreate
 
   resources:
     requests:
@@ -156,8 +160,8 @@ postgresql:
 uploads:
   persistence:
     enabled: true
-    storageClass: ""  # Use NFS or similar for ReadWriteMany
-    accessMode: ReadWriteMany
+    storageClass: ""  # Use default storage class
+    accessMode: ReadWriteOnce  # Changed from ReadWriteMany - requires Recreate strategy
     size: 20Gi
 
 # Horizontal Pod Autoscaler configuration
