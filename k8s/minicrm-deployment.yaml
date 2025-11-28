@@ -27,22 +27,26 @@ spec:
             sleep 2
           done
           echo "PostgreSQL is ready!"
-      - name: setup-uploads
+      - name: setup-storage
         image: busybox:1.35
         command:
         - sh
         - -c
         - |
-          echo "Setting up uploads directory..."
-          # Create media subdirectories
+          echo "Setting up storage directories..."
+          # Create uploads subdirectories
           mkdir -p /uploads/media/thumb /uploads/media/medium /uploads/media/large /uploads/files
+          # Create logo directory
+          mkdir -p /logo
           # Fix permissions (www-data UID:GID is 33:33)
-          chown -R 33:33 /uploads
-          chmod -R 755 /uploads
-          echo "Uploads directory ready!"
+          chown -R 33:33 /uploads /logo
+          chmod -R 755 /uploads /logo
+          echo "Storage directories ready!"
         volumeMounts:
         - name: uploads-storage
           mountPath: /uploads
+        - name: logo-storage
+          mountPath: /logo
       containers:
       - name: minicrm
         image: ghcr.io/jasmaine/minicrm:latest
@@ -65,7 +69,9 @@ spec:
               key: DB_PASSWORD
         volumeMounts:
         - name: uploads-storage
-          mountPath: /var/www/html/uploads
+          mountPath: /var/www/html/public/uploads
+        - name: logo-storage
+          mountPath: /var/www/html/public/logo
         - name: storage-logs
           mountPath: /var/www/html/storage/logs
         resources:
@@ -95,5 +101,8 @@ spec:
       - name: uploads-storage
         persistentVolumeClaim:
           claimName: uploads-pvc
+      - name: logo-storage
+        persistentVolumeClaim:
+          claimName: logo-pvc
       - name: storage-logs
         emptyDir: {}
