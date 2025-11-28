@@ -1,5 +1,33 @@
 # MiniCRM Deployment Configurations
 
+A modern, lightweight CRM system for managing customers, contacts, and communications.
+
+## Features
+
+- **Customer Management** - Track customers, prospects, partners, and vendors
+- **Contact Management** - Manage contacts associated with customers
+- **Import/Export** - Bulk import contacts from CSV with duplicate detection and automatic company matching
+- **Email Campaigns** - Create and send HTML email campaigns with templates
+- **Template Builder** - Drag-and-drop email template builder
+- **Task Management** - Create and assign tasks with due dates
+- **Activity Tracking** - Automatic logging of all user activities
+- **File Management** - Upload and manage files related to customers
+- **Media Library** - Store and manage images for email campaigns
+- **OAuth Authentication** - Secure login with Google and Microsoft
+- **Multi-language Support** - 7 languages: English, Dutch, French, German, Spanish, Italian, Turkish
+- **Email Tracking** - Track email opens and link clicks
+- **Responsive Design** - Works on desktop, tablet, and mobile
+- **Queue Worker** - Background email sending with queue management
+
+## Technology Stack
+
+- **Backend**: PHP 8.2, PDO for database access
+- **Frontend**: Vanilla JavaScript, modern CSS
+- **Database**: PostgreSQL 
+- **Email**: PHPMailer with SMTP support
+- **Architecture**: MVC pattern, RESTful API design
+- **Deployment**: Docker, Kubernetes, Helm
+
 ## Quick Start
 
 The easiest way to deploy MiniCRM is using the automated installation script:
@@ -242,8 +270,40 @@ kubectl cp minicrm/<pod-name>:/var/www/html/uploads ./uploads-backup
 
 ## License
 
-This project is open source software.
+See LICENSE file for license information.
+
+## Support
+
+For issues and questions:
+- Check the documentation files
+- Review troubleshooting section
+- Check application logs
+
+## Contributing
+
+We welcome contributions! Please:
+1. Test thoroughly
+2. Follow existing code style
+3. Update documentation
+4. Include security considerations
+
+## Changelog
+
+See releases for version history and changes.
+
+## About
+
+MiniCRM is designed for small to medium businesses that need a lightweight, easy-to-deploy CRM system without the complexity of enterprise solutions.
+
+Built with modern web technologies and best practices:
+- MVC architecture
+- RESTful API design
+- Security-first approach
+- Mobile-responsive
+- Docker-native
+- Kubernetes-ready
 
 ---
 
-**MiniCRM** - Lightweight CRM for small businesses
+**Version:** 1.0.0
+**Last Updated:** 2025-11-28

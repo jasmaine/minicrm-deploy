@@ -46,7 +46,7 @@ spec:
         - |
           echo "Setting up storage directories..."
           # Create uploads subdirectories
-          mkdir -p /uploads/media/thumb /uploads/media/medium /uploads/media/large /uploads/files
+          mkdir -p /uploads/media/original /uploads/media/medium /uploads/media/thumbnails /uploads/files
           # Create logo directory
           mkdir -p /logo
           # Fix permissions (www-data UID:GID is 33:33)
